@@ -146,7 +146,7 @@ def get_mR(params, **kwargs):
     lb_rqd = params.lb_rqd / 1000  # Forankring af armering uden hensyntagen til opbuk, m
     R1 = get_R1(params)  # Radius af fundament, m
 
-    if lb > lb_rqd
+    if lb > lb_rqd:
         mR_lst = [0, mR, mR, mR, mR, 0]
         r_lst2 = [-R1, -R1, 0, R1, R1]
     elif lb < R1:

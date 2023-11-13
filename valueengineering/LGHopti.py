@@ -58,7 +58,7 @@ def get_mR_opti(params, **kwargs):
     lb = lb / 1000   # m
 
     # Plot data, 6 koordinatsæt
-    if lb > lb_rqd
+    if lb > lb_rqd:
         mR_lst = [0, mR, mR, mR, mR, 0]
         r_lst2 = [-R1, -R1, 0, R1, R1]
     elif lb < R1:
