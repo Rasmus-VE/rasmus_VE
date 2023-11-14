@@ -118,9 +118,11 @@ def out_m_max(params, **kwargs):
 def get_mR(params, **kwargs):
     h = params.h  # mm
     c = params.c  # mm
-
     ds = float(params.ds_str[1:])  # mm
     a = params.a  # mm
+
+    lb_rqd = params.lb_rqd / 1000  # Forankring af armering uden hensyntagen til opbuk, m
+    R1 = get_R1(params)  # Radius af fundament, m
 
     # Materialeparametre
     fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
@@ -128,32 +130,29 @@ def get_mR(params, **kwargs):
     fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
     fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
 
-
-    As = math.pi / 4 * ds ** 2 / a  # mm2/mm
-    d = h - (c + ds)  # mm
-    omega = As * fyd / (d * fcd)  # enhedsløs
-    mu = omega * (1 - omega / 2)  # enhedsløs
-    mR = mu * d ** 2 * fcd  # momentbæreevne, Nmm/mm
-    mR = mR / 1000  # momentbæreevne, kNm/m
-
-    mR = get_mRd_rc_plate(h, c, fcd, ds, a, fyd)
-
+    # Fuld forankringslængde
     lb = fyk * ds / (4 * fbd)  # mm (forudsætter gode forankringsforhold (bunden af et fundament)).
-    lb = lb / 1000  # Fuld forankringslængde m
-    lb_rqd = params.lb_rqd / 1000  # Forankring af armering uden hensyntagen til opbuk, m
-    R1 = get_R1(params)  # Radius af fundament, m
+    lb = lb / 1000  # m
+    rb = max(min(R1 + lb_rqd - lb, R1), 0)  # radius ud til fuld forankring start, m
+    r2_lst = [-R1, -R1, -rb, rb, R1, R1]
 
-    if lb < lb_rqd:
-        mR_lst = [0, mR, mR, mR, mR, 0]
-        r_lst2 = [-R1, -R1, 0, R1, R1, R1]
-    elif lb < R1:
-        mR_lst = [0, mR * lb_rqd / lb, mR, mR, mR * lb_rqd / lb, 0]
-        r_lst2 = [-R1, -R1, -(R1 - (lb - lb_rqd)), R1 - (lb - lb_rqd), R1, R1]
-    else:
-        mR_lst = [0, mR * lb_rqd / lb, mR * R1 / lb, mR * lb_rqd / lb, 0]
-        r_lst2 = [-R1, -R1, 0, R1, R1]
+    # Momentbæreevne plade
+    mR = get_mRd_rc_plate(h, c, fcd, ds, a, fyd)  # kNm/m
+    mR_edge = mR * lb_rqd / lb
+    mR_max = min(mR, mR * (R1 + lb_rqd) / lb)
+    mR_lst = [0, mR_edge, mR_max, mR_max, mR_edge, 0]
 
-    return [mR_lst, r_lst2]
+    # if lb < lb_rqd:
+    #     mR_lst = [0, mR, mR, mR, mR, 0]
+    #     r_lst2 = [-R1, -R1, 0, R1, R1, R1]
+    # elif lb < R1:
+    #     mR_lst = [0, mR * lb_rqd / lb, mR, mR, mR * lb_rqd / lb, 0]
+    #     r_lst2 = [-R1, -R1, -(R1 - (lb - lb_rqd)), R1 - (lb - lb_rqd), R1, R1]
+    # else:
+    #     mR_lst = [0, mR * lb_rqd / lb, mR * R1 / lb, mR * lb_rqd / lb, 0]
+    #     r_lst2 = [-R1, -R1, 0, R1, R1]
+
+    return [r2_lst, mR_lst]
 
 
 def out_OK(params, **kwargs):
