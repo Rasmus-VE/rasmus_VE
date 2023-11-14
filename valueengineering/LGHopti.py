@@ -105,6 +105,8 @@ def get_case_lst(params, **kwargs):
 
     ds_array = [float(x[1:]) for x in params.ds_str]  # mm
 
+    ds_array = params.ds_str  # mm
+
     a_min, a_max, a_step = params.a_min, params.a_max, params.a_step
     a_start = a_min if a_min % a_step == 0 else a_min + a_step - (a_min % a_step)
     a_stop = a_max + a_step if a_max % a_step == 0 else a_max
@@ -137,6 +139,9 @@ def get_case_lst(params, **kwargs):
             # else:
             #     r1, mR1 = 0, R1
             #     r2, mR2 = mR * R1 / lb, mR * lb_rqd / lb
+
+            params.ds_str = ds
+            params.a = a
 
             [[rb, mR_max], [R1, mR_edge]] = get_mR(params)
 
