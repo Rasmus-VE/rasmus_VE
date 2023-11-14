@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from valueengineering.LGH import get_R1, get_R0, get_m, get_vol_c
 from viktor.errors import InputViolation, UserError
+from valueengineering.LGH import *
 from valueengineering.material import *
 
 
