@@ -60,19 +60,18 @@ def get_R(params, **kwargs):
 def get_m(params, **kwargs):
     P = params.P  # Søjlelast, kN
 
-
     R1 = get_R1(params)  # Radius af fundament, m
     R = get_R(params)  # Radius ved overgang konstant til aftagende moment m_t
     R0 = get_R0(params)  # Radius af søjle, m
-    D = 2 * R0  # Diameter af søjle (Equivalent diameter ved kvadratisk søjle), m
 
+    D = 2 * R0  # Diameter af søjle (Equivalent diameter ved kvadratisk søjle), m
     n_step = 100
 
-    r_lst1 = np.linspace(0, R0, num=n_step, endpoint=False)
-    r_lst2 = np.linspace(R0, R, num=n_step, endpoint=False)
-    r_lst3 = np.linspace(R, R1, num=n_step)
+    r_lst1 = list(np.linspace(0, R0, num=n_step, endpoint=False))
+    r_lst2 = list(np.linspace(R0, R, num=n_step, endpoint=False))
+    r_lst3 = list(np.linspace(R, R1, num=n_step))
 
-    r_lst = r_lst1.tolist() + r_lst2.tolist() + r_lst3.tolist()
+    r_lst = r_lst1 + r_lst2 + r_lst3
 
     mt_lst = []
     mr_lst = []
@@ -120,21 +119,24 @@ def get_mR(params, **kwargs):
     h = params.h  # mm
     c = params.c  # mm
 
+    ds = float(params.ds_str[1:])  # mm
+    a = params.a  # mm
+
     # Materialeparametre
     fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
     fbd = get_concrete_params(params.fc_str, params.gc)['fbd']  # MPa
     fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
     fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
 
-    ds = float(params.ds_str[1:])  # mm
-    a = params.a  # mm
-    As = math.pi / 4 * ds ** 2 / a  # mm2/mm
 
+    As = math.pi / 4 * ds ** 2 / a  # mm2/mm
     d = h - (c + ds)  # mm
     omega = As * fyd / (d * fcd)  # enhedsløs
     mu = omega * (1 - omega / 2)  # enhedsløs
     mR = mu * d ** 2 * fcd  # momentbæreevne, Nmm/mm
     mR = mR / 1000  # momentbæreevne, kNm/m
+
+    mR = get_mRd_rc_plate(h, c, fcd, ds, a, fyd)
 
     lb = fyk * ds / (4 * fbd)  # mm (forudsætter gode forankringsforhold (bunden af et fundament)).
     lb = lb / 1000  # Fuld forankringslængde m
