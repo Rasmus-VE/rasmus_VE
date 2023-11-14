@@ -190,10 +190,10 @@ def out_mass_s_per_m3_opti(params, **kwargs):
 
 def out_rebar_name(params, **kwargs):
     try:
-        st_YK = params.st_YK
+        YK_str = params.YK_str
         ds, a = get_ds_a_opti(params)  # mm, mm
         mass_s = get_mass_s_opti(params)   # kg
-        rebar_name = f" {st_YK}{str(int(ds))}/{a} us-br"
+        rebar_name = f" {YK_str}{str(int(ds))}/{a} us-br"
         return rebar_name
     except:
         return ""
