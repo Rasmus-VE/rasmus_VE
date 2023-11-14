@@ -120,16 +120,15 @@ def get_mR(params, **kwargs):
     h = params.h  # mm
     c = params.c  # mm
 
-    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']
-    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']
+    # Materialeparametre
+    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
+    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']  # MPa
+    fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
+    fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
 
     ds = float(params.ds_str[1:])  # mm
     a = params.a  # mm
     As = math.pi / 4 * ds ** 2 / a  # mm2/mm
-
-    fyk = 500 if params.st_YK == 'K' else 550  # MPa
-    gs = params.gs
-    fyd = fyk / gs
 
     d = h - (c + ds)  # mm
     omega = As * fyd / (d * fcd)  # enhedsløs

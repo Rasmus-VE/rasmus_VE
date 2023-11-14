@@ -29,21 +29,18 @@ def get_mR_opti(params, **kwargs):
     R1 = get_R1(params)  # Ækvivalent radius af fundament, m
     lb_rqd = params.lb_rqd / 1000  # Basisforankringslængde, m
 
-    # Beton
-    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']
-    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']
+    # Materialeparametre
+    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
+    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']  # MPa
+    fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
+    fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
 
     # Henter ds og a, der giver mindste stålmasse
     ds, a = get_ds_a_opti(params)   # mm, mm
 
-    # Stål
-    As = math.pi / 4 * ds ** 2 / a  # mm2/mm
-    fyk = 500 if params.st_YK == 'K' else 550  # MPa
-    gs = params.gs
-    fyd = fyk / gs
-
     # Tværsnitsbetragtning (flydning i armering: fuld forankring)
     d = h - (c + ds)  # mm
+    As = math.pi / 4 * ds ** 2 / a  # mm2/mm
     omega = As * fyd / (d * fcd)  # enhedsløs
     mu = omega * (1 - omega / 2)  # enhedsløs
     mR = mu * d ** 2 * fcd  # momentbæreevne, Nmm/mm
@@ -94,19 +91,13 @@ def get_case_lst(params, **kwargs):
     rho_s = 7850  # kg/m3
     L = params.L / 1000  # m
 
-    fck = float(params.fc_str[1:])
-    fctm = 0.3 * fck ** (2 / 3)
-    fctk = 0.7 * fctm
-    gc = params.gc
-    fcd = fck / gc
-    fctd = fctk / gc
-    fbd = 2.25 * fctd
+    # Materialeparametre
+    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
+    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']  # MPa
+    fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
+    fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
 
     lb_rqd = params.lb_rqd / 1000  # Forankring af armering uden hensyntagen til opbuk, m
-
-    fyk = 500 if params.st_YK == 'K' else 550  # MPa
-    gs = params.gs
-    fyd = fyk / gs
 
     [r_lst, mt_lst, mr_lst] = get_m(params)
     mE = max(mt_lst)
