@@ -20,11 +20,11 @@ def get_input_error_opti(params, **kwargs):
                         input_violations=violations)
 
 
-def get_mR_opti(params, ds, a, **kwargs):
+def get_mR_opti(params, ds_str, a, **kwargs):
     """
     get_mR_opti returnerer koordinatsæt til plot af momentbæreevnen mR.
     """
-    params.ds_str = f'ø{ds}'
+    params.ds_str = ds_str
     params.a = a
 
     [[rb, mR_max], [R1, mR_edge]] = get_mR(params)
