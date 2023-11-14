@@ -39,7 +39,7 @@ def out_q_round(params, **kwargs):
 
 
 def get_R0(params, **kwargs):
-    if params.DB == 'Cirkulær':
+    if params.DB_str == 'Cirkulær':
         D = params.D / 1000  # Diameter af søjle, m
         R0 = D / 2  # Radius af søjle, m
     else:
@@ -184,11 +184,11 @@ def out_OK(params, **kwargs):
 
 
 def vis_D(params, **kwargs):
-    return params.DB == 'Cirkulær'
+    return params.DB_str == 'Cirkulær'
 
 
 def vis_B(params, **kwargs):
-    return params.DB == 'Kvadratisk'
+    return params.DB_str == 'Kvadratisk'
 
 
 def get_vol_c(params, **kwargs):
