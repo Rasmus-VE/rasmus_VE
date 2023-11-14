@@ -158,13 +158,13 @@ def get_mR(params, **kwargs):
 def out_OK(params, **kwargs):
     try:
         [r_lst, mt_lst, mr_lst] = get_m(params)
-        [mR_lst, r_lst2] = get_mR(params)
+        [r2_lst, mR_lst] = get_mR(params)
     except:
         return ""
 
-    r1 = r_lst2[-3]
+    r1 = r2_lst[-3]
     mR1 = mR_lst[-3]
-    r2 = r_lst2[-2]
+    r2 = r2_lst[-2]
     mR2 = mR_lst[-2]
     # print("r1 =", r1, ", mR1 =", mR1, ", r2 =", r2, " mR2 =", mR2)
 
