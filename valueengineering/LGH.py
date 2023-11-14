@@ -214,7 +214,7 @@ def get_mass_s(params, **kwargs):
     ds = float(params.ds_str[1:]) / 1000    # m
     a = params.a / 1000     # m
     As = math.pi / 4 * ds ** 2 / a          # m2/m
-    print(As)
+
     vol_s = 2 * As * L
     mass_s = vol_s * rho_s
     return mass_s
