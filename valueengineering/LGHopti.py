@@ -115,7 +115,7 @@ def get_case_lst(params, **kwargs):
     case_lst = []
 
     for ds in ds_array:
-        d = h - (c + ds)  # mm
+        # d = h - (c + ds)  # mm
         for a in a_array:
             # # Tværsnitsbetragtning
             # As = math.pi / 4 * ds ** 2 / a  # mm2/mm
