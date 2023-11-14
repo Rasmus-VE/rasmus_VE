@@ -7,7 +7,7 @@ from valueengineering.LGH import *
 from valueengineering.material import *
 
 
-def get_input_error(params, **kwargs):
+def get_input_error_opti(params, **kwargs):
     input_fields = dict(P=params.P, L=params.L, D=params.D, B=params.B, gc=params.gc, gs=params.gs,
                         h=params.h, c=params.c, a_min=params.a_min, a_max=params.a_max, lb_rqd=params.lb_rqd)
     violations = []
@@ -20,49 +20,57 @@ def get_input_error(params, **kwargs):
                         input_violations=violations)
 
 
-def get_mR_opti(params, **kwargs):
+def get_mR_opti(params, ds, a, **kwargs):
     """
     get_mR_opti returnerer koordinatsæt til plot af momentbæreevnen mR.
     """
-    # Geometri
-    h = params.h  # mm
-    c = params.c  # mm
-    R1 = get_R1(params)  # Ækvivalent radius af fundament, m
-    lb_rqd = params.lb_rqd / 1000  # Basisforankringslængde, m
+    params.ds_str = f'ø{ds}'
+    params.a = a
 
-    # Materialeparametre
-    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
-    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']  # MPa
-    fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
-    fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
+    [[rb, mR_max], [R1, mR_edge]] = get_mR(params)
 
-    # Henter ds og a, der giver mindste stålmasse
-    ds, a = get_ds_a_opti(params)   # mm, mm
+    r2_lst = [-R1, -R1, -rb, rb, R1, R1]
+    mR_lst = [0, mR_edge, mR_max, mR_max, mR_edge, 0]
 
-    # Tværsnitsbetragtning (flydning i armering: fuld forankring)
-    d = h - (c + ds)  # mm
-    As = math.pi / 4 * ds ** 2 / a  # mm2/mm
-    omega = As * fyd / (d * fcd)  # enhedsløs
-    mu = omega * (1 - omega / 2)  # enhedsløs
-    mR = mu * d ** 2 * fcd  # momentbæreevne, Nmm/mm
-    mR = mR / 1000  # momentbæreevne, kNm/m
+    # # Geometri
+    # h = params.h  # mm
+    # c = params.c  # mm
+    # R1 = get_R1(params)  # Ækvivalent radius af fundament, m
+    # lb_rqd = params.lb_rqd / 1000  # Basisforankringslængde, m
+    #
+    # # Materialeparametre
+    # fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
+    # fbd = get_concrete_params(params.fc_str, params.gc)['fbd']  # MPa
+    # fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
+    # fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
+    #
+    # # Henter ds og a, der giver mindste stålmasse
+    # ds, a = get_ds_a_opti(params)   # mm, mm
+    #
+    # # Tværsnitsbetragtning (flydning i armering: fuld forankring)
+    # d = h - (c + ds)  # mm
+    # As = math.pi / 4 * ds ** 2 / a  # mm2/mm
+    # omega = As * fyd / (d * fcd)  # enhedsløs
+    # mu = omega * (1 - omega / 2)  # enhedsløs
+    # mR = mu * d ** 2 * fcd  # momentbæreevne, Nmm/mm
+    # mR = mR / 1000  # momentbæreevne, kNm/m
+    #
+    # # Fuld forankringslængde
+    # lb = fyk * ds / (4 * fbd)  # mm (forudsætter gode forankringsforhold (bunden af et fundament)).
+    # lb = lb / 1000   # m
+    #
+    # # Plot data, 6 koordinatsæt
+    # if lb < lb_rqd:
+    #     mR_lst = [0, mR, mR, mR, mR, 0]
+    #     r_lst2 = [-R1, -R1, 0, R1, R1, R1]
+    # elif lb < R1:
+    #     mR_lst = [0, mR * lb_rqd / lb, mR, mR, mR * lb_rqd / lb, 0]
+    #     r_lst2 = [-R1, -R1, -(R1 - (lb - lb_rqd)), R1 - (lb - lb_rqd), R1, R1]
+    # else:
+    #     mR_lst = [0, mR * lb_rqd / lb, mR * (R1 + lb_rqd) / lb, mR * lb_rqd / lb, 0]
+    #     r_lst2 = [-R1, -R1, 0, R1, R1]
 
-    # Fuld forankringslængde
-    lb = fyk * ds / (4 * fbd)  # mm (forudsætter gode forankringsforhold (bunden af et fundament)).
-    lb = lb / 1000   # m
-
-    # Plot data, 6 koordinatsæt
-    if lb < lb_rqd:
-        mR_lst = [0, mR, mR, mR, mR, 0]
-        r_lst2 = [-R1, -R1, 0, R1, R1, R1]
-    elif lb < R1:
-        mR_lst = [0, mR * lb_rqd / lb, mR, mR, mR * lb_rqd / lb, 0]
-        r_lst2 = [-R1, -R1, -(R1 - (lb - lb_rqd)), R1 - (lb - lb_rqd), R1, R1]
-    else:
-        mR_lst = [0, mR * lb_rqd / lb, mR * (R1 + lb_rqd) / lb, mR * lb_rqd / lb, 0]
-        r_lst2 = [-R1, -R1, 0, R1, R1]
-
-    return [mR_lst, r_lst2]
+    return [r2_lst, mR_lst]
 
 
 def get_ds_a_opti(params, **kwargs):
@@ -86,24 +94,8 @@ def get_case_lst(params, **kwargs):
     Beregner momentbæreevnen af alle kombonationer af ds og a. Frasorterer alle design der ikke for tilstrækkelig styrke.
     Returnerer alle OK kombinationer af ds, a og As.
     """
-    h = params.h  # mm
-    c = params.c  # mm
-    R1 = get_R1(params)  # Radius af ækvivalent fundament, m
-    rho_s = 7850  # kg/m3
-    L = params.L / 1000  # m
-
-    # Materialeparametre
-    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
-    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']  # MPa
-    fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
-    fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
-
-    lb_rqd = params.lb_rqd / 1000  # Forankring af armering uden hensyntagen til opbuk, m
-
     [r_lst, mt_lst, mr_lst] = get_m(params)
     mE = max(mt_lst)
-
-    # ds_array = [float(x[1:]) for x in params.ds_str_lst]  # mm
 
     ds_array = params.ds_str_lst  # mm
 
@@ -115,31 +107,7 @@ def get_case_lst(params, **kwargs):
     case_lst = []
 
     for ds_str in ds_array:
-        # d = h - (c + ds)  # mm
         for a in a_array:
-            # # Tværsnitsbetragtning
-            # As = math.pi / 4 * ds ** 2 / a  # mm2/mm
-            # omega = As * fyd / (d * fcd)  # enhedsløs
-            # mu = omega * (1 - omega / 2)  # enhedsløs
-            # mR = mu * d ** 2 * fcd  # momentbæreevne, Nmm/mm
-            # mR = mR / 1000  # momentbæreevne, kNm/m
-            #
-            # # Grovsortering: forsætter hvis mR (fuld forankring) er mindre end mE
-            # if mR < mE:
-            #     continue
-            #
-            # # Plotpunkter
-            # lb = fyk * ds / (4 * fbd)  # mm (forudsætter gode forankringsforhold (bunden af et fundament)).
-            # lb = lb / 1000  # Fuld forankringslængde m
-            #
-            # # Plotpunkter, start- og slutpunkt for skrå stykke på mR-kurve
-            # if lb < R1:
-            #     r1, mR1 = R1 - (lb - lb_rqd), mR
-            #     r2, mR2 = R1, mR * lb_rqd / lb
-            # else:
-            #     r1, mR1 = 0, R1
-            #     r2, mR2 = mR * R1 / lb, mR * lb_rqd / lb
-
             params.ds_str = ds_str
             params.a = a
 
