@@ -3,6 +3,7 @@ import numpy as np
 import pandas as pd
 from valueengineering.LGH import get_R1, get_R0, get_m, get_vol_c
 from viktor.errors import InputViolation, UserError
+from valueengineering.material import *
 
 
 def get_input_error(params, **kwargs):
@@ -29,13 +30,8 @@ def get_mR_opti(params, **kwargs):
     lb_rqd = params.lb_rqd / 1000  # Basisforankringslængde, m
 
     # Beton
-    fck = float(params.fc_str[1:])
-    fctm = 0.3 * fck ** (2 / 3)
-    fctk = 0.7 * fctm
-    gc = params.gc
-    fcd = fck / gc
-    fctd = fctk / gc
-    fbd = 2.25 * fctd
+    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']
+    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']
 
     # Henter ds og a, der giver mindste stålmasse
     ds, a = get_ds_a_opti(params)   # mm, mm

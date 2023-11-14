@@ -120,13 +120,8 @@ def get_mR(params, **kwargs):
     h = params.h  # mm
     c = params.c  # mm
 
-    fck = float(params.fc_str[1:])
-    fctm = 0.3 * fck ** (2 / 3)
-    fctk = 0.7 * fctm
-    gc = params.gc
-    fcd = fck / gc
-    fctd = fctk / gc
-    fbd = 2.25 * fctd
+    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']
+    fbd = get_concrete_params(params.fc_str, params.gc)['fbd']
 
     ds = float(params.ds_str[1:])  # mm
     a = params.a  # mm
