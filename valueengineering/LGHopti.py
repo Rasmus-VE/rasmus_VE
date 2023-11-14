@@ -76,7 +76,7 @@ def get_ds_a_opti(params, **kwargs):
                         input_violations=[violation])
 
     df = pd.DataFrame(data=case_lst)
-    df = df.sort_values(by=['mass_s'])
+    df = df.sort_values(by=['As'])
 
     return df.iloc[0, 0], df.iloc[0, 1]
 
