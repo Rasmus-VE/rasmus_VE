@@ -142,17 +142,7 @@ def get_mR(params, **kwargs):
     mR_max = min(mR, mR * (R1 + lb_rqd) / lb)
     mR_lst = [0, mR_edge, mR_max, mR_max, mR_edge, 0]
 
-    # if lb < lb_rqd:
-    #     mR_lst = [0, mR, mR, mR, mR, 0]
-    #     r_lst2 = [-R1, -R1, 0, R1, R1, R1]
-    # elif lb < R1:
-    #     mR_lst = [0, mR * lb_rqd / lb, mR, mR, mR * lb_rqd / lb, 0]
-    #     r_lst2 = [-R1, -R1, -(R1 - (lb - lb_rqd)), R1 - (lb - lb_rqd), R1, R1]
-    # else:
-    #     mR_lst = [0, mR * lb_rqd / lb, mR * R1 / lb, mR * lb_rqd / lb, 0]
-    #     r_lst2 = [-R1, -R1, 0, R1, R1]
-
-    return [r2_lst, mR_lst]
+    return [[rb, mR_max], [R1, mR_edge]]
 
 
 def out_OK(params, **kwargs):
@@ -166,7 +156,6 @@ def out_OK(params, **kwargs):
     mR1 = mR_lst[-3]
     r2 = r2_lst[-2]
     mR2 = mR_lst[-2]
-    # print("r1 =", r1, ", mR1 =", mR1, ", r2 =", r2, " mR2 =", mR2)
 
     if mt_lst[0] > mR1:
         return "Bæreevne ikke OK!"
@@ -176,7 +165,6 @@ def out_OK(params, **kwargs):
             continue
         else:
             mR = mR1 + (mR2 - mR1) / (r2 - r1) * (r - r1)
-            # print("mR = ", mR, ", mE = ", mt_lst[i])
 
             if round(mt_lst[i]) > round(mR):
                 return "Bæreevne ikke OK!"
