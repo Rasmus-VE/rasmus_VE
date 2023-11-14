@@ -114,7 +114,7 @@ def get_case_lst(params, **kwargs):
 
     case_lst = []
 
-    for ds in ds_array:
+    for ds_str in ds_array:
         # d = h - (c + ds)  # mm
         for a in a_array:
             # # Tværsnitsbetragtning
@@ -140,7 +140,7 @@ def get_case_lst(params, **kwargs):
             #     r1, mR1 = 0, R1
             #     r2, mR2 = mR * R1 / lb, mR * lb_rqd / lb
 
-            params.ds_str = ds
+            params.ds_str = ds_str
             params.a = a
 
             [[rb, mR_max], [R1, mR_edge]] = get_mR(params)
@@ -161,6 +161,7 @@ def get_case_lst(params, **kwargs):
                 continue
 
             # Calculate As
+            ds = float(params.ds_str[1:])
             As = math.pi / 4 * ds ** 2 / a  # mm2/mm
 
             case = {'ds': ds, 'a': a, 'As': As}
