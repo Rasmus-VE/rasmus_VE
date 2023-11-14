@@ -1,6 +1,7 @@
 import math
 import numpy as np
 from viktor.errors import UserError, InputViolation
+from valueengineering.material import *
 
 
 def get_input_error(params, **kwargs):
