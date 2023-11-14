@@ -71,7 +71,7 @@ def get_ds_a_opti(params, **kwargs):
     """
     case_lst = get_case_lst(params)
     if not case_lst:
-        violation = InputViolation("", fields=["a_min", "a_max", "ds_str"])
+        violation = InputViolation("", fields=["a_min", "a_max", "ds_str_lst"])
         raise UserError("Ingen armering inden for de valgte grænser kan overholde bæreevnen",
                         input_violations=[violation])
 
@@ -103,9 +103,9 @@ def get_case_lst(params, **kwargs):
     [r_lst, mt_lst, mr_lst] = get_m(params)
     mE = max(mt_lst)
 
-    ds_array = [float(x[1:]) for x in params.ds_str]  # mm
+    # ds_array = [float(x[1:]) for x in params.ds_str_lst]  # mm
 
-    ds_array = params.ds_str  # mm
+    ds_array = params.ds_str_lst  # mm
 
     a_min, a_max, a_step = params.a_min, params.a_max, params.a_step
     a_start = a_min if a_min % a_step == 0 else a_min + a_step - (a_min % a_step)

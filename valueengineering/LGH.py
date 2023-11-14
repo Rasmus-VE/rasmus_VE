@@ -12,9 +12,9 @@ def get_input_error(params, **kwargs):
         if value is None:
             violations.append(InputViolation("Type a value", fields=[key]))
 
-    ds = float(params.ds_str[1:])
-    if params.c > params.h/2 - ds:
-        violations.append(InputViolation("h >= 2*(c+ø_s) ikke overholdt", fields=["h", "c", "ds_str"]))
+    # ds = float(params.ds_str[1:])
+    # if params.c > params.h/2 - ds:
+    #     violations.append(InputViolation("h >= 2*(c+ø_s) ikke overholdt", fields=["h", "c", "ds_str"]))
 
     if violations:
         raise UserError("You must fix invalid field values before a result can be obtained.",
