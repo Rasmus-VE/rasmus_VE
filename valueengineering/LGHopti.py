@@ -32,44 +32,6 @@ def get_mR_opti(params, ds_str, a, **kwargs):
     r2_lst = [-R1, -R1, -rb, rb, R1, R1]
     mR_lst = [0, mR_edge, mR_max, mR_max, mR_edge, 0]
 
-    # # Geometri
-    # h = params.h  # mm
-    # c = params.c  # mm
-    # R1 = get_R1(params)  # Ækvivalent radius af fundament, m
-    # lb_rqd = params.lb_rqd / 1000  # Basisforankringslængde, m
-    #
-    # # Materialeparametre
-    # fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
-    # fbd = get_concrete_params(params.fc_str, params.gc)['fbd']  # MPa
-    # fyk = get_rebar_params(params.YK_str, params.gs)['fyk']  # MPa
-    # fyd = get_rebar_params(params.YK_str, params.gs)['fyd']  # MPa
-    #
-    # # Henter ds og a, der giver mindste stålmasse
-    # ds, a = get_ds_a_opti(params)   # mm, mm
-    #
-    # # Tværsnitsbetragtning (flydning i armering: fuld forankring)
-    # d = h - (c + ds)  # mm
-    # As = math.pi / 4 * ds ** 2 / a  # mm2/mm
-    # omega = As * fyd / (d * fcd)  # enhedsløs
-    # mu = omega * (1 - omega / 2)  # enhedsløs
-    # mR = mu * d ** 2 * fcd  # momentbæreevne, Nmm/mm
-    # mR = mR / 1000  # momentbæreevne, kNm/m
-    #
-    # # Fuld forankringslængde
-    # lb = fyk * ds / (4 * fbd)  # mm (forudsætter gode forankringsforhold (bunden af et fundament)).
-    # lb = lb / 1000   # m
-    #
-    # # Plot data, 6 koordinatsæt
-    # if lb < lb_rqd:
-    #     mR_lst = [0, mR, mR, mR, mR, 0]
-    #     r_lst2 = [-R1, -R1, 0, R1, R1, R1]
-    # elif lb < R1:
-    #     mR_lst = [0, mR * lb_rqd / lb, mR, mR, mR * lb_rqd / lb, 0]
-    #     r_lst2 = [-R1, -R1, -(R1 - (lb - lb_rqd)), R1 - (lb - lb_rqd), R1, R1]
-    # else:
-    #     mR_lst = [0, mR * lb_rqd / lb, mR * (R1 + lb_rqd) / lb, mR * lb_rqd / lb, 0]
-    #     r_lst2 = [-R1, -R1, 0, R1, R1]
-
     return [r2_lst, mR_lst]
 
 

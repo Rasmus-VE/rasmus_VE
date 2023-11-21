@@ -134,16 +134,81 @@ def get_mR(params, **kwargs):
     lb = fyk * ds / (4 * fbd)  # mm (forudsætter gode forankringsforhold (bunden af et fundament)).
     lb = lb / 1000  # m
     rb = max(min(R1 + lb_rqd - lb, R1), 0)  # radius ud til fuld forankring start, m
-    r2_lst = [-R1, -R1, -rb, rb, R1, R1]
 
     # Momentbæreevne plade
     mR = get_mRd_rc_plate(h, c, fcd, ds, a, fyd)  # kNm/m
     mR_edge = mR * lb_rqd / lb
     mR_max = min(mR, mR * (R1 + lb_rqd) / lb)
-    mR_lst = [0, mR_edge, mR_max, mR_max, mR_edge, 0]
 
     return [[rb, mR_max], [R1, mR_edge]]
 
+
+def get_vE_vR(params, **kwargs):
+
+    # Geometry
+    h = params.h        # mm
+    c = params.c        # mm
+    D = params.D        # mm
+    B = params.B        # mm
+    L = params.L        # mm
+    P = params.P * 1000  # N
+    gc = params.gc
+    ds = float(params.ds_str[1:])  # mm
+    a = params.a        # mm
+
+    # Materialeparametre
+    fck = get_concrete_params(params.fc_str, params.gc)['fck']  # MPa
+    fcd = get_concrete_params(params.fc_str, params.gc)['fcd']  # MPa
+
+    # as_min = max(0.26 * fctm / fyk * d, 0.0013 * d)   # mm2/mm
+    # rho_min = as_min / d                              # mm2/mm2
+
+    R1 = get_R1(params) * 1000      # mm
+    As = np.pi / 4 * ds ** 2 / a    # mm2/mm
+
+    d = h - c - ds  # mm
+    Ac = L**2       # mm2
+    rho = As / d    # mm2/mm2
+
+    # Strengths
+    ny = max(0.7 - fck / 200, 0.45)
+    k = min(1 + (200 / d) ** .5, 2)
+
+    vRd_min = 0.051 / gc * k ** 1.5 * fck ** .5
+    vRd_c = max(vRd_min, 0.18 / gc * k * (100 * rho * fck)**(1/3))
+    vRd_max = .5 * ny * fcd
+
+    DB = D if params.DB_str == 'Cirkulær' else B
+
+    a_lst = np.linspace(0, R1 - DB/2, 100)
+    r_lst = []
+    vRd_lst = []
+    vEd_lst = []
+
+    for a in a_lst:
+
+        if a == 0:
+            vRd = vRd_max
+        else:
+            vRd = min(max(vRd_c * 2 * d / a, vRd_min), vRd_max)
+
+        if params.DB_str == 'Cirkulær':
+            r = (a + D/2) / 1000
+            u = 2 * np.pi * (D/2 + a)
+            A1 = np.pi * (D/2 + a)**2
+        else:
+            r = (a + B/2) / 1000
+            u = 2 * np.pi * a + 4 * B
+            A1 = B ** 2 + 4 * B * a + np.pi * a ** 2
+
+        VEd = P * (Ac-A1) / Ac
+        vEd = VEd / d / u
+
+        r_lst.append(r)
+        vRd_lst.append(vRd)
+        vEd_lst.append(vEd)
+
+    return [r_lst, vEd_lst, vRd_lst]
 
 def out_OK(params, **kwargs):
     try:
